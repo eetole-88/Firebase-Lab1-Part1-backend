@@ -79,4 +79,23 @@ routes.post("/shoutouts", async (req, res) => {
   }
 });
 
+routes.delete("/shoutouts/:id", async (req, res) => {
+  const id = req.params.id;
+  try {
+    const client = await getClient();
+    const result = await client
+      .db()
+      .collection<Shoutout>("shoutouts")
+      .deleteOne({ _id: new ObjectId(id) });
+    if (result.deletedCount === 0) {
+      res.status(404).json({ message: "Not Found" });
+    } else {
+      res.status(204).end();
+    }
+  } catch (err) {
+    console.error("FAIL", err);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+});
+
 export default routes;
